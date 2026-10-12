@@ -19,7 +19,7 @@ Foto::Foto(string fecha, double tam, string ubicacion, int cantidadLikes) {
     likes = cantidadLikes;
 }
 
-// Constructor de copia
+
 Foto::Foto(const Foto& otra) {
     fechaCaptura = otra.fechaCaptura;
     tamano = otra.tamano;

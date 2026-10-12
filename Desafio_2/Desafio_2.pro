@@ -6,8 +6,12 @@ CONFIG -= qt
 SOURCES += \
         Album.cpp \
         Foto.cpp \
-        main.cpp
+        main.cpp \
+        mensaje.cpp \
+        solicitudamistad.cpp
 
 HEADERS += \
     Album.h \
-    Foto.h
+    Foto.h \
+    mensaje.h \
+    solicitudamistad.h

@@ -11,7 +11,6 @@ Album::Album(){
     cantFotos = 0;
 }
 
-// Constructor: guarda la primera foto
 Album::Album(string nom, string rut, string priv, const Foto& primeraFoto) {
     nombre = nom;
     ruta = rut;
@@ -20,7 +19,6 @@ Album::Album(string nom, string rut, string priv, const Foto& primeraFoto) {
     cantFotos = 1;
 }
 
-// Constructor de copia
 Album::Album(const Album& otro) {
     nombre = otro.nombre;
     ruta = otro.ruta;
@@ -65,7 +63,7 @@ void Album::setPrivacidad(string priv) {
     privacidad = priv;
 }
 
-// Agregar una foto al final del album
+
 bool Album::agregarFoto(const Foto& foto) {
     if (cantFotos >= MAX_FOTOS) {
         return false;
@@ -75,7 +73,6 @@ bool Album::agregarFoto(const Foto& foto) {
     return true;
 }
 
-// Devuelve una referencia a la foto (para darle like sin copiarla)
 Foto& Album::getFoto(int indice) {
     return fotos[indice];
 }

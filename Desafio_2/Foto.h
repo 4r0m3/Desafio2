@@ -19,6 +19,7 @@ public:
 
     // Constructor de copia
     Foto(const Foto& otra);
+    Foto& operator=(const Foto& otra);
 
     // Destructor
     ~Foto();

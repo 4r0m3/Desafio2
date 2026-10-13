@@ -26,8 +26,17 @@ Foto::Foto(const Foto& otra) {
     ruta = otra.ruta;
     likes = otra.likes;
 }
+Foto& Foto::operator=(const Foto& otra) {
+    if (this != &otra) {
+        fechaCaptura = otra.fechaCaptura;
+        tamano = otra.tamano;
+        ruta = otra.ruta;
+        likes = otra.likes;
+    }
 
-// Destructor
+    return *this;
+}
+
 Foto::~Foto() {
 }
 
@@ -61,12 +70,10 @@ void Foto::setRuta(string ubicacion) {
     ruta = ubicacion;
 }
 
-// Dar like
 void Foto::darLike() {
     likes++;
 }
 
-// Quitar like
 void Foto::quitarLike() {
     if (likes > 0) {
         likes--;

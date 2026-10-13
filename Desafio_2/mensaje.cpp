@@ -1,80 +1,106 @@
-#include "mensaje.h"
+#include "Mensaje.h"
 #include <iostream>
 using namespace std;
 
 Mensaje::Mensaje() {
-    emisor = "";
-    receptor = "";
-    contenido = "";
-    fecha = "";
+    emisor = 0;
+    receptor = 0;
+    fecha = 0;
     leido = false;
+    contenido = "";
 }
 
-Mensaje::Mensaje(string emi, string rec, string cont, string fec) {
+Mensaje::Mensaje(unsigned short emi, unsigned short rec, const string& cont, unsigned int fec) {
     emisor = emi;
     receptor = rec;
-    contenido = cont;
     fecha = fec;
     leido = false;
+    contenido = cont;
 }
 
 Mensaje::Mensaje(const Mensaje& otro) {
     emisor = otro.emisor;
     receptor = otro.receptor;
-    contenido = otro.contenido;
     fecha = otro.fecha;
     leido = otro.leido;
+    contenido = otro.contenido;
 }
+
+Mensaje& Mensaje::operator=(const Mensaje& otro) {
+    if (this != &otro) {
+        emisor = otro.emisor;
+        receptor = otro.receptor;
+        fecha = otro.fecha;
+        leido = otro.leido;
+        contenido = otro.contenido;
+    }
+    return *this;
+}
+
 Mensaje::~Mensaje() {
 }
 
-// Getters
-string Mensaje::getEmisor() {
+unsigned short Mensaje::getEmisor() const {
     return emisor;
 }
 
-string Mensaje::getReceptor() {
+unsigned short Mensaje::getReceptor() const {
     return receptor;
 }
 
-string Mensaje::getContenido() {
+const string& Mensaje::getContenido() const {
     return contenido;
 }
 
-string Mensaje::getFecha() {
+unsigned int Mensaje::getFecha() const {
     return fecha;
 }
 
-bool Mensaje::getLeido() {
+bool Mensaje::getLeido() const {
     return leido;
 }
 
-// Setters
-void Mensaje::setContenido(string cont) {
+void Mensaje::setContenido(const string& cont) {
     contenido = cont;
 }
 
-void Mensaje::setFecha(string fec) {
+void Mensaje::setFecha(unsigned int fec) {
     fecha = fec;
+}
+
+void Mensaje::setLeido(bool valor) {
+    leido = valor;
 }
 
 void Mensaje::marcarLeido() {
     leido = true;
 }
 
-bool Mensaje::esValido() {
-    int largo = contenido.length();
+bool Mensaje::esValido() const {
+    unsigned int largo = contenido.length();
     return largo > 0 && largo <= Max_caracter;
 }
 
-bool Mensaje::estaEnRango(string inicio, string fin) {
+bool Mensaje::estaEnRango(unsigned int inicio, unsigned int fin) const {
     return fecha >= inicio && fecha <= fin;
 }
 
-void Mensaje::mostrarMensaje() {
-    cout << "De: " << emisor << endl;
-    cout << "Para: " << receptor << endl;
-    cout << "Fecha: " << fecha << endl;
+bool Mensaje::operator<(const Mensaje& otro) const {
+    return fecha < otro.fecha;
+}
+
+void Mensaje::mostrarMensaje() const {
+    unsigned int anio = fecha / 10000;
+    unsigned int mes = (fecha / 100) % 100;
+    unsigned int dia = fecha % 100;
+
+    cout << "De (id): " << emisor << endl;
+    cout << "Para (id): " << receptor << endl;
+    cout << "Fecha: " << anio << "-";
+    if (mes < 10) cout << "0";
+    cout << mes << "-";
+    if (dia < 10) cout << "0";
+    cout << dia << endl;
     cout << "Estado: " << (leido ? "leido" : "no leido") << endl;
     cout << "Mensaje: " << contenido << endl;
 }

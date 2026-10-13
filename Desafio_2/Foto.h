@@ -1,4 +1,3 @@
-
 #ifndef FOTO_H
 #define FOTO_H
 
@@ -7,38 +6,30 @@ using namespace std;
 
 class Foto {
 private:
-    string fechaCaptura;
+    unsigned int fechaCaptura;
     double tamano;
     string ruta;
-    int likes;
+    unsigned int likes;
 
 public:
     Foto();
-    // Constructor
-    Foto(string fecha, double tam, string ubicacion, int cantidadLikes);
-
-    // Constructor de copia
+    Foto(unsigned int fecha, double tam, const string& ubicacion, unsigned int cantidadLikes);
     Foto(const Foto& otra);
     Foto& operator=(const Foto& otra);
-
-    // Destructor
     ~Foto();
 
-    // Getters
-    string getFechaCaptura();
-    double getTamano();
-    string getRuta();
-    int getLikes();
+    unsigned int getFechaCaptura() const;
+    double getTamano() const;
+    const string& getRuta() const;
+    unsigned int getLikes() const;
 
-    // Setters
-    void setFechaCaptura(string fecha);
+    void setFechaCaptura(unsigned int fecha);
     void setTamano(double tam);
-    void setRuta(string ubicacion);
+    void setRuta(const string& ubicacion);
 
-    // Operaciones
     void darLike();
     void quitarLike();
-    void mostrarFoto();
+    void mostrarFoto() const;
 };
 
 #endif

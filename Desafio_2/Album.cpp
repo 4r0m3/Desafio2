@@ -1,134 +1,96 @@
 #include "Album.h"
 #include <iostream>
-
 using namespace std;
-
-const int CAPACIDAD_INICIAL = 4;
 
 Album::Album() {
     nombre = "";
     ruta = "";
     privacidad = "privado";
-    capacidad = CAPACIDAD_INICIAL;
-    cantFotos = 0;
-    fotos = new Foto[capacidad];
 }
 
-Album::Album(string nom, string rut, string priv, const Foto& primeraFoto) {
+Album::Album(const string& nom, const string& rut, const string& priv) {
     nombre = nom;
     ruta = rut;
     privacidad = priv;
-    capacidad = CAPACIDAD_INICIAL;
-    fotos = new Foto[capacidad];
-    fotos[0] = primeraFoto;
-    cantFotos = 1;
 }
 
 Album::Album(const Album& otro) {
     nombre = otro.nombre;
     ruta = otro.ruta;
     privacidad = otro.privacidad;
-    cantFotos = otro.cantFotos;
-    capacidad = otro.capacidad;
-    fotos = new Foto[capacidad];
-    for (int i = 0; i < cantFotos; i++) {
-        fotos[i] = otro.fotos[i];
-    }
+    fotos = otro.fotos;
 }
 
 Album::~Album() {
-    delete[] fotos;
+
 }
 
 Album& Album::operator=(const Album& otro) {
-    if (this != &otro) {            // evita problemas con a = a
-        delete[] fotos;             // libera el bloque anterior
+    if (this != &otro) {
         nombre = otro.nombre;
         ruta = otro.ruta;
         privacidad = otro.privacidad;
-        cantFotos = otro.cantFotos;
-        capacidad = otro.capacidad;
-        fotos = new Foto[capacidad];
-        for (int i = 0; i < cantFotos; i++) {
-            fotos[i] = otro.fotos[i];
-        }
+        fotos = otro.fotos;
     }
     return *this;
 }
 
-void Album::crecer() {
-    capacidad = capacidad * 2;
-    Foto* nuevo = new Foto[capacidad];
-    for (int i = 0; i < cantFotos; i++) {
-        nuevo[i] = fotos[i];
-    }
-    delete[] fotos;
-    fotos = nuevo;
-}
-
 // Getters
-string Album::getNombre() {
+const string& Album::getNombre() const {
     return nombre;
 }
 
-string Album::getRuta() {
+const string& Album::getRuta() const {
     return ruta;
 }
 
-string Album::getPrivacidad() {
+const string& Album::getPrivacidad() const {
     return privacidad;
 }
 
-int Album::getCantFotos() {
-    return cantFotos;
+int Album::getCantFotos() const {
+    return fotos.getCantidad();
 }
 
-int Album::getCapacidad() {
-    return capacidad;
+int Album::getCapacidad() const {
+    return fotos.getCapacidad();
+}
+
+Foto* Album::getFoto(int indice) {
+    if (indice < 0 || indice >= fotos.getCantidad()) {
+        return nullptr;
+    }
+    return &fotos[indice];
 }
 
 // Setters
-void Album::setNombre(string nom) {
+void Album::setNombre(const string& nom) {
     nombre = nom;
 }
 
-void Album::setRuta(string rut) {
+void Album::setRuta(const string& rut) {
     ruta = rut;
 }
 
-void Album::setPrivacidad(string priv) {
+void Album::setPrivacidad(const string& priv) {
     privacidad = priv;
 }
 
 void Album::agregarFoto(const Foto& foto) {
-    if (cantFotos < 0) {
-        return;
-    }
-    if (cantFotos >= capacidad) {
-        crecer();
-    }
-    fotos[cantFotos] = foto;
-    cantFotos++;
+    fotos.agregar(foto);
 }
 
-Foto& Album::getFoto(int indice) {
-    if (indice < 0 || indice >= cantFotos) {
-        return fotos[0];
-    }
-    return fotos[indice];
-}
-
-// Mostrar informacion del album
-void Album::mostrarAlbum() {
+void Album::mostrarAlbum() const {
     cout << "Album: " << nombre << endl;
     cout << "Ruta: " << ruta << endl;
     cout << "Privacidad: " << privacidad << endl;
-    cout << "Fotos: " << cantFotos << " (capacidad " << capacidad << ")" << endl;
+    cout << "Fotos: " << fotos.getCantidad()
+         << " (capacidad " << fotos.getCapacidad() << ")" << endl;
 }
 
-
 void Album::carrusel() {
-    if (cantFotos <= 0) {
+    int total = fotos.getCantidad();
+    if (total <= 0) {
         cout << "El album esta vacio" << endl;
         return;
     }
@@ -137,10 +99,10 @@ void Album::carrusel() {
     char opcion = ' ';
 
     while (opcion != 's' && opcion != 'S') {
-        cout << endl << "Foto " << actual + 1 << " de " << cantFotos << endl;
+        cout << endl << "Foto " << actual + 1 << " de " << total << endl;
         fotos[actual].mostrarFoto();
 
-        if (cantFotos == 1) {
+        if (total == 1) {
             cout << "Este album solo tiene una foto, se repetira" << endl;
         }
 
@@ -150,9 +112,9 @@ void Album::carrusel() {
         }
 
         if (opcion == 'p' || opcion == 'P') {
-            actual = (actual + 1) % cantFotos;
+            actual = (actual + 1) % total;
         } else if (opcion == 'o' || opcion == 'O') {
-            actual = (actual - 1 + cantFotos) % cantFotos;
+            actual = (actual - 1 + total) % total;
         } else if (opcion == 'l' || opcion == 'L') {
             fotos[actual].darLike();
             cout << "Like registrado" << endl;

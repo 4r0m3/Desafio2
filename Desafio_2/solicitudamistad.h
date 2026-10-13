@@ -1,34 +1,36 @@
 #ifndef SOLICITUDAMISTAD_H
 #define SOLICITUDAMISTAD_H
-#include <string>
-using namespace std;
-const int PENDIENTE = 0;
-const int ACEPTADA = 1;
-const int RECHAZADA = 2;
 
+enum EstadoSolicitud {
+    PENDIENTE,
+    ACEPTADA,
+    RECHAZADA
+};
 
-class SolicitudAmistad
-{
+class SolicitudAmistad {
 private:
-    string emisor;
-    string receptor;
-    int estado;
+    unsigned short emisor;
+    unsigned short receptor;
+    EstadoSolicitud estado;
+
 public:
     SolicitudAmistad();
-    SolicitudAmistad(string emi, string rec);
+    SolicitudAmistad(unsigned short emi, unsigned short rec);
     SolicitudAmistad(const SolicitudAmistad& otra);
     ~SolicitudAmistad();
 
-    //getter
-    string getEmisor();
-    string getReceptor();
-    int getEstado();
+    SolicitudAmistad& operator=(const SolicitudAmistad& otra);
+    bool operator==(const SolicitudAmistad& otra) const;
 
-    //acciones
-    bool estaPendiente();
+    unsigned short getEmisor() const;
+    unsigned short getReceptor() const;
+    int getEstado() const;
+
+    bool estaPendiente() const;
     bool aceptar();
     bool rechazar();
-    void mostrarSolicitud();
+
+    void mostrarSolicitud() const;
 };
 
-#endif // SOLICITUDAMISTAD_H
+#endif

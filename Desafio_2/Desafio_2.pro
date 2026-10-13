@@ -13,5 +13,6 @@ SOURCES += \
 HEADERS += \
     Album.h \
     Foto.h \
+    Lista.h \
     mensaje.h \
     solicitudamistad.h

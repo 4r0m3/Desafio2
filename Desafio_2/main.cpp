@@ -65,6 +65,7 @@ int main() {
         case 9: usuarioConMasAmigos(datos, usuarios); break;
         case 0:
             guardarDatos(datos, usuarios, amigosA, amigosB, solicitudes, mensajes);
+            guardarFotos(datos, albumes, duenos);
             cout << "Datos guardados exitosamente. Hasta luego" << endl;
             break;
         default: cout << "Opcion invalida" << endl; break;

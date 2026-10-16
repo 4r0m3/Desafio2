@@ -25,6 +25,7 @@ void cargarSolicitudes(Datos& datos, Lista<SolicitudAmistad>& solicitudes);
 void cargarMensajes(Datos& datos, Lista<Mensaje>& mensajes);
 void cargarAlbumes(Datos& datos, Lista<Album>& albumes, Lista<int>& duenos);
 void cargarFotos(Datos& datos, Lista<Album>& albumes, Lista<int>& duenos);
+void guardarFotos(Datos& datos, Lista<Album>& albumes, Lista<int>& duenos);
 int buscarUsuario(Lista<Usuario>& usuarios, int id);
 bool sonAmigos(Lista<int>& amigosA, Lista<int>& amigosB, int a, int b);
 void verAmigos(Lista<Usuario>& usuarios, Lista<int>& amigosA, Lista<int>& amigosB, int id);
@@ -426,9 +427,14 @@ inline int iniciarSesion(Lista<Usuario>& usuarios) {
         if (opcion == "-1") return -1;
 
         if (opcion == "1") {
-            int id = std::stoi(leer("Id de usuario: "));
-            resultado = iniciarSesion(usuarios, id);
-            if (resultado != -1) return resultado;
+            try {
+                string entradaId = leer("Id de usuario: ");
+                int id = std::stoi(entradaId); // Puede lanzar excepción si no es un número válido
+                resultado = iniciarSesion(usuarios, id);
+                if (resultado != -1) return resultado;
+            } catch (const std::exception& e) {
+                cout << "[Error]: Por favor, ingrese un numero de ID valido." << endl;
+            }
         }
         else if (opcion == "2") {
             string nombre = leer("Nombre de usuario: ");
@@ -478,6 +484,23 @@ inline bool esFechaValida(const string& strFecha) {
     } catch (const std::exception& e) {
         return false;
     }
+}
+inline void guardarFotos(Datos& datos, Lista<Album>& albumes, Lista<int>& duenos) {
+    ofstream archivo(datos.getFotos());
+    if (!archivo.is_open()) return;
+
+    for (int k = 0; k < albumes.getCantidad(); k++) {
+        for (int f = 0; f < albumes[k].getCantFotos(); f++) {
+            Foto* foto = albumes[k].getFoto(f);
+            archivo << duenos[k] << '|'
+                    << albumes[k].getNombre() << '|'
+                    << foto->getFechaCaptura() << '|'
+                    << foto->getTamano() << '|'
+                    << foto->getRuta() << '|'
+                    << foto->getLikes() << '\n';
+        }
+    }
+    archivo.close();
 }
 
 #endif

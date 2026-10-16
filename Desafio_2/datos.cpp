@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <string>
 using namespace std;
 
 Datos::Datos() {
@@ -30,8 +31,16 @@ bool Datos::generarArchivos(int n) {
 
     unsigned char* ady = new unsigned char[n * n]();
 
+    // Lista variada de nombres para los usuarios
+    const char* nombresUsuarios[] = {
+        "Andres", "Sofia", "Carlos", "Valentina", "Mateo", "Camila",
+        "Alejandro", "Lucia", "Juan", "Mariana", "Daniel", "Valeria",
+        "Santiago", "Isabella", "Sebastian", "Gabriela", "David", "Martina",
+        "Nicolas", "Catalina", "Felipe", "Sara", "Manuel", "Elena",
+        "Esteban", "Paula", "Julian", "Jimena", "Tomas", "Daniela"
+    };
+    const int totalNombresUsuarios = 30;
 
-    // Cada ciudad esta en la misma posicion que su pais (arreglos paralelos).
     const char* ciudades[] = {
         "Medellin", "Bogota", "Cali", "Cartagena", "Barranquilla", "Bucaramanga",
         "Pereira", "Manizales", "Cucuta", "Santa Marta",
@@ -48,14 +57,15 @@ bool Datos::generarArchivos(int n) {
     };
     const int totalCiudades = 24;
 
-    // ---- usuarios: id|nombre|fechaNac|correo|fotoPerfil|clave|ciudad|pais|fechaInscripcion
+    // ---- Usuarios con nombres variados
     for (int i = 0; i < n; i++) {
-        string nom = "user" + to_string(i);
+        string nom = nombresUsuarios[i % totalNombresUsuarios];
+        if (i >= totalNombresUsuarios) {
+            nom += to_string(i); // Evita duplicados si n > 30
+        }
 
-        // Nacimiento: 1970..2006, mes 1-12, dia 1-28
         int fechaNac = (1970 + rand() % 37) * 10000 + (1 + rand() % 12) * 100 + (1 + rand() % 28);
 
-        // Inscripcion: 2015..2026 (sin pasar de septiembre de 2026)
         int anio = 2015 + rand() % 12;
         int mes = 1 + rand() % 12;
         if (anio == 2026 && mes > 9) mes = 1 + rand() % 9;
@@ -70,10 +80,12 @@ bool Datos::generarArchivos(int n) {
            << fechaInsc << '\n';
     }
 
+    // ---- Amistades aleatorias
     for (int i = 0; i < n; i++) {
-        for (int d = 1; d <= 20; d++) {
-            int j = (i + d) % n;
-            if (j != i && rand() % 100 < 70 && ady[i * n + j] == 0) {
+        int conexiones = 1 + rand() % (n > 10 ? 10 : (n > 1 ? n - 1 : 1));
+        for (int k = 0; k < conexiones; k++) {
+            int j = rand() % n;
+            if (j != i && ady[i * n + j] == 0) {
                 ady[i * n + j] = 1;
                 ady[j * n + i] = 1;
                 fa << i << '|' << j << '\n';
@@ -81,27 +93,53 @@ bool Datos::generarArchivos(int n) {
         }
     }
 
+    // ---- Solicitudes de amistad pendientes (estado 0)
+    for (int i = 0; i < n; i++) {
+        // Garantizamos que cada usuario envíe entre 2 y 3 solicitudes pendientes
+        int enviadas = 0;
+        int intentos = 0;
+        while (enviadas < 3 && intentos < 20) {
+            int j = rand() % n; // Receptor aleatorio
 
-    for (int i = 0; i < n; i += 2) {
-        int j = (i + 100 + rand() % 50) % n;
-        if (j != i && ady[i * n + j] == 0) {
-            fs << i << '|' << j << "|0\n";
+            // Validar que no sea él mismo y que NO sean amigos ya (ady == 0)
+            if (j != i && ady[i * n + j] == 0) {
+                // Formato: id_emisor | id_receptor | estado (0 = pendiente)
+                fs << i << '|' << j << "|0\n";
+                enviadas++;
+            }
+            intentos++;
         }
     }
 
+    // ---- Mensajes variados y garantizados entre amigos
+    const char* mensajesPosibles[] = {
+        "Hola, como vas?",
+        "Feliz cumpleanos! Que la pases excelente hoy.",
+        "Nos vemos este fin de semana para jugar un partido?",
+        "Oye, muy buenas las fotos que subiste al album.",
+        "Hola! Que tal va todo por alla?",
+        "Mucho exito con tus proyectos y clases de esta semana.",
+        "Me avisas cuando te conectes para charlar un rato.",
+        "Gracias por la ayuda con la tarea el otro dia!"
+    };
+    const int totalMensajes = 8;
 
     for (int i = 0; i < n; i++) {
-        for (int d = 1; d <= 20; d++) {
+        int mensajesGenerados = 0;
+        for (int d = 1; d < n && mensajesGenerados < 3; d++) {
             int j = (i + d) % n;
-            if (ady[i * n + j] == 1 && rand() % 100 < 20) {
+            // Si son amigos, les creamos mensajes obligatoriamente para que aparezcan al iniciar sesión
+            if (ady[i * n + j] == 1) {
+                string textoElegido = mensajesPosibles[rand() % totalMensajes];
+                // Formato: emisor | receptor | fecha | leido (0 = no leído) | texto
                 fm << i << '|' << j << '|'
                    << 20260000 + (1 + rand() % 12) * 100 + (1 + rand() % 28) << '|'
-                   << rand() % 2 << "|Hola, como vas?\n";
+                   << 0 << '|' << textoElegido << '\n';
+                mensajesGenerados++;
             }
         }
     }
-
-
+    // ---- Álbumes y Fotos
     const char* nombres[] = {"Viajes", "Familia"};
     const char* privac[]  = {"publico", "amigos"};
     for (int i = 0; i < n; i++) {
@@ -119,5 +157,34 @@ bool Datos::generarArchivos(int n) {
     }
 
     delete[] ady;
+    return true;
+}
+bool Datos::contarAmigos(int n, Lista<int>& cantidades) const {
+    ifstream archivo(amistades);
+    if (!archivo.is_open()) {
+        return false;
+    }
+
+    cantidades = Lista<int>();
+    for (int i = 0; i < n; i++) {
+        cantidades.agregar(0);
+    }
+
+    string linea;
+    while (getline(archivo, linea)) {
+        size_t barra = linea.find('|');
+        if (barra == string::npos) {
+            continue;
+        }
+        int a = std::stoi(linea.substr(0, barra));
+        int b = std::stoi(linea.substr(barra + 1));
+
+        if (a < 0 || a >= n || b < 0 || b >= n || a == b) {
+            continue;
+        }
+        cantidades[a]++;
+        cantidades[b]++;
+    }
+    archivo.close();
     return true;
 }

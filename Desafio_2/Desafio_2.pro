@@ -9,12 +9,15 @@ SOURCES += \
         datos.cpp \
         main.cpp \
         mensaje.cpp \
-        solicitudamistad.cpp
+        solicitudamistad.cpp \
+        usuario.cpp
 
 HEADERS += \
     Album.h \
     Foto.h \
+    Funciones.h \
     Lista.h \
     datos.h \
     mensaje.h \
-    solicitudamistad.h
+    solicitudamistad.h \
+    usuario.h

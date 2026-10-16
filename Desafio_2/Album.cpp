@@ -106,7 +106,7 @@ void Album::carrusel() {
             cout << "Este album solo tiene una foto, se repetira" << endl;
         }
 
-        cout << "[o] anterior  [p] siguiente  [l] like  [k] quitar like  [s] salir: ";
+        cout << "[o] anterior  [p] siguiente  [l] like   [k]dis-like [s] salir: ";
         if (!(cin >> opcion)) {
             return;
         }
@@ -118,14 +118,12 @@ void Album::carrusel() {
         } else if (opcion == 'l' || opcion == 'L') {
             fotos[actual].darLike();
             cout << "Like registrado" << endl;
-        } else if (opcion == 'k' || opcion == 'K') {
-            if (fotos[actual].getLikes() > 0) {
-                fotos[actual].quitarLike();
-                cout << "Like quitado" << endl;
-            } else {
-                cout << "La foto no tiene likes para quitar" << endl;
-            }
-        } else if (opcion != 's' && opcion != 'S') {
+        }
+        else if (opcion == 'k' || opcion == 'K') {
+            fotos[actual].quitarLike();
+            cout << "Like registrado" << endl;
+        }
+         else if (opcion != 's' && opcion != 'S') {
             cout << "Opcion invalida" << endl;
         }
     }

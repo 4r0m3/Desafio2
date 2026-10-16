@@ -2,6 +2,7 @@
 #define DATOS_H
 
 #include <string>
+#include "Lista.h"
 using namespace std;
 
 class Datos
@@ -25,6 +26,7 @@ public:
     string getFotos() const;
 
     bool generarArchivos(int n);
+    bool contarAmigos(int n, Lista<int>& cantidades) const;
 };
 
 #endif // DATOS_H

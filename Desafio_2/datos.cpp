@@ -95,15 +95,11 @@ bool Datos::generarArchivos(int n) {
 
     // ---- Solicitudes de amistad pendientes (estado 0)
     for (int i = 0; i < n; i++) {
-        // Garantizamos que cada usuario envíe entre 2 y 3 solicitudes pendientes
         int enviadas = 0;
         int intentos = 0;
         while (enviadas < 3 && intentos < 20) {
-            int j = rand() % n; // Receptor aleatorio
-
-            // Validar que no sea él mismo y que NO sean amigos ya (ady == 0)
+            int j = rand() % n;
             if (j != i && ady[i * n + j] == 0) {
-                // Formato: id_emisor | id_receptor | estado (0 = pendiente)
                 fs << i << '|' << j << "|0\n";
                 enviadas++;
             }

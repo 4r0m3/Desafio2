@@ -81,9 +81,6 @@ bool Mensaje::esValido() const {
     return largo > 0 && largo <= Max_caracter;
 }
 
-bool Mensaje::estaEnRango(unsigned int inicio, unsigned int fin) const {
-    return fecha >= inicio && fecha <= fin;
-}
 
 bool Mensaje::operator<(const Mensaje& otro) const {
     return fecha < otro.fecha;

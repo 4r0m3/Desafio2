@@ -32,7 +32,6 @@ public:
     void marcarLeido();
 
     bool esValido() const;
-    bool estaEnRango(unsigned int inicio, unsigned int fin) const;
     bool operator<(const Mensaje& otro) const;
 
     void mostrarMensaje() const;

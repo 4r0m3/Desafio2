@@ -117,7 +117,6 @@ void Album::carrusel() {
             actual = (actual - 1 + total) % total;
         } else if (opcion == 'l' || opcion == 'L') {
             fotos[actual].darLike();
-            cout << "Like registrado" << endl;
         }
         else if (opcion == 'k' || opcion == 'K') {
             fotos[actual].quitarLike();

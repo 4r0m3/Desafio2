@@ -12,6 +12,7 @@
 #include "solicitudamistad.h"
 #include "Album.h"
 #include "Foto.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -290,64 +291,178 @@ inline void usuarioConMasAmigos(Datos& datos, Lista<Usuario>& usuarios) {
 inline void gestionarPerfil(Usuario& usuario) {
     int opcion;
     do {
-        cout << "\n===============================" << endl;
-        cout << "         MI PERFIL            " << endl;
-        cout << "===============================" << endl;
+        cout << "\n===============================\n";
+        cout << "         MI PERFIL            \n";
+        cout << "===============================\n";
         usuario.mostrarUsuario();
-        cout << "-------------------------------" << endl;
-        cout << "1. Modificar nombre" << endl;
-        cout << "2. Modificar clave" << endl;
-        cout << "3. Modificar correo" << endl;
-        cout << "4. Modificar foto de perfil" << endl;
-        cout << "5. Modificar ciudad y pais" << endl;
-        cout << "6. Modificar fecha de nacimiento" << endl;
-        cout << "0. Volver al menu principal" << endl;
-        opcion = std::stoi(leer("Selecciona una opcion para modificar: "));
+        cout << "-------------------------------\n";
+        cout << "1. Modificar nombre\n";
+        cout << "2. Modificar clave\n";
+        cout << "3. Modificar correo\n";
+        cout << "4. Modificar foto de perfil\n";
+        cout << "5. Modificar ciudad y pais\n";
+        cout << "6. Modificar fecha de nacimiento\n";
+        cout << "0. Volver al menu principal\n";
+
+        string entradaOpcion = leer("Selecciona una opcion para modificar: ");
+        try {
+            opcion = std::stoi(entradaOpcion);
+        } catch (const std::exception& e) {
+            opcion = -1; // Fuerza una opción inválida si ingresan letras
+        }
 
         switch (opcion) {
         case 1: {
-            string nuevoNombre = leer("Ingresa el nuevo nombre: ");
+            string nuevoNombre;
+            bool contieneBarra;
+            do {
+                contieneBarra = false;
+                nuevoNombre = leer("Ingresa el nuevo nombre (No puede contener '|'): ");
+
+                for (char c : nuevoNombre) {
+                    if (c == '|') {
+                        contieneBarra = true;
+                        break;
+                    }
+                }
+
+                if (contieneBarra) {
+                    cout << "[Error]: El nombre no puede contener el caracter '|'. Intenta de nuevo.\n";
+                } else if (nuevoNombre.empty()) {
+                    cout << "[Error]: El nombre no puede estar vacio.\n";
+                    contieneBarra = true;
+                }
+            } while (contieneBarra);
+
             usuario.setNombre(nuevoNombre);
-            cout << "¡Nombre actualizado con exito!" << endl;
+            cout << "¡Nombre actualizado con exito!\n";
             break;
         }
         case 2: {
-            string nuevaClave = leer("Ingresa la nueva clave: ");
+            string nuevaClave;
+            bool contieneBarra;
+            do {
+                contieneBarra = false;
+                nuevaClave = leer("Ingresa la nueva clave (No puede contener '|'): ");
+
+                for (char c : nuevaClave) {
+                    if (c == '|') {
+                        contieneBarra = true;
+                        break;
+                    }
+                }
+
+                if (contieneBarra) {
+                    cout << "[Error]: La clave no puede contener el caracter '|'. Intenta de nuevo.\n";
+                } else if (nuevaClave.empty()) {
+                    cout << "[Error]: La clave no puede estar vacia.\n";
+                    contieneBarra = true;
+                }
+            } while (contieneBarra);
+
             usuario.setClave(nuevaClave);
-            cout << "¡Clave actualizada con exito!" << endl;
+            cout << "¡Clave actualizada con exito!\n";
             break;
         }
         case 3: {
-            string nuevoCorreo = leer("Ingresa el nuevo correo: ");
+            string nuevoCorreo;
+            bool contieneBarra;
+            do {
+                contieneBarra = false;
+                nuevoCorreo = leer("Ingresa el nuevo correo (No puede contener '|'): ");
+
+                for (char c : nuevoCorreo) {
+                    if (c == '|') {
+                        contieneBarra = true;
+                        break;
+                    }
+                }
+
+                if (contieneBarra) {
+                    cout << "[Error]: El correo no puede contener el caracter '|'. Intenta de nuevo.\n";
+                } else if (nuevoCorreo.empty()) {
+                    cout << "[Error]: El correo no puede estar vacio.\n";
+                    contieneBarra = true;
+                }
+            } while (contieneBarra);
+
             usuario.setCorreo(nuevoCorreo);
-            cout << "¡Correo actualizado con exito!" << endl;
+            cout << "¡Correo actualizado con exito!\n";
             break;
         }
         case 4: {
-            string nuevaFoto = leer("Ingresa la nueva ruta de la foto de perfil: ");
+            string nuevaFoto;
+            bool contieneBarra;
+            do {
+                contieneBarra = false;
+                nuevaFoto = leer("Ingresa la nueva ruta de la foto de perfil (No puede contener '|'): ");
+
+                for (char c : nuevaFoto) {
+                    if (c == '|') {
+                        contieneBarra = true;
+                        break;
+                    }
+                }
+
+                if (contieneBarra) {
+                    cout << "[Error]: La ruta no puede contener el caracter '|'. Intenta de nuevo.\n";
+                } else if (nuevaFoto.empty()) {
+                    cout << "[Error]: La ruta no puede estar vacia.\n";
+                    contieneBarra = true;
+                }
+            } while (contieneBarra);
+
             usuario.setFotoPerfil(nuevaFoto);
-            cout << "¡Foto de perfil actualizada con exito!" << endl;
+            cout << "¡Foto de perfil actualizada con exito!\n";
             break;
         }
         case 5: {
-            string nuevaCiudad = leer("Ingresa la nueva ciudad: ");
-            string nuevoPais = leer("Ingresa el nuevo pais: ");
+            string nuevaCiudad, nuevoPais;
+            bool contieneBarra;
+            do {
+                contieneBarra = false;
+                nuevaCiudad = leer("Ingresa la nueva ciudad (No puede contener '|'): ");
+                nuevoPais = leer("Ingresa el nuevo pais (No puede contener '|'): ");
+
+                for (char c : nuevaCiudad) {
+                    if (c == '|') { contieneBarra = true; break; }
+                }
+                for (char c : nuevoPais) {
+                    if (c == '|') { contieneBarra = true; break; }
+                }
+
+                if (contieneBarra) {
+                    cout << "[Error]: Ciudad o pais no pueden contener el caracter '|'. Intenta de nuevo.\n";
+                } else if (nuevaCiudad.empty() || nuevoPais.empty()) {
+                    cout << "[Error]: Los campos de ubicacion no pueden estar vacios.\n";
+                    contieneBarra = true;
+                }
+            } while (contieneBarra);
+
             usuario.setCiudad(nuevaCiudad);
             usuario.setPais(nuevoPais);
-            cout << "¡Ubicacion actualizada con exito!" << endl;
+            cout << "¡Ubicacion actualizada con exito!\n";
             break;
         }
         case 6: {
-            int nuevaFecha = std::stoi(leer("Ingresa la nueva fecha de nacimiento (aaaammdd): "));
+            string strFecha;
+            do {
+                strFecha = leer("Ingresa la nueva fecha de nacimiento (aaaammdd - exactamente 8 digitos): ");
+                if (!esFechaValida(strFecha)) {
+                    cout << "[Error]: Fecha invalida o formato incorrecto. Asegurese de ingresar 8 numeros validos.\n";
+                }
+            } while (!esFechaValida(strFecha));
+
+            int nuevaFecha = std::stoi(strFecha);
             usuario.setFechaNac(nuevaFecha);
-            cout << "¡Fecha de nacimiento actualizada con exito!" << endl;
+            cout << "¡Fecha de nacimiento actualizada con exito!\n";
             break;
         }
         case 0:
-            cout << "Volviendo al menu principal..." << endl;
+            cout << "Volviendo al menu principal...\n";
             break;
         default:
-            cout << "Opcion invalida, intenta de nuevo." << endl;
+            cout << "Opcion invalida, intenta de nuevo.\n";
             break;
         }
     } while (opcion != 0);
@@ -429,7 +544,7 @@ inline int iniciarSesion(Lista<Usuario>& usuarios) {
         if (opcion == "1") {
             try {
                 string entradaId = leer("Id de usuario: ");
-                int id = std::stoi(entradaId); // Puede lanzar excepción si no es un número válido
+                int id = std::stoi(entradaId);
                 resultado = iniciarSesion(usuarios, id);
                 if (resultado != -1) return resultado;
             } catch (const std::exception& e) {

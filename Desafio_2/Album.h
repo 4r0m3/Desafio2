@@ -35,6 +35,7 @@ public:
     void agregarFoto(const Foto& foto);
     void mostrarAlbum() const;
     void carrusel();
+    void carruselConteo(unsigned long long& iter);
 };
 
 #endif

@@ -42,7 +42,13 @@ int buscarUsuarioPorNombre(Lista<Usuario>& usuarios, const string& nombre);
 int iniciarSesion(Lista<Usuario>& usuarios, int id);
 int iniciarSesion(Lista<Usuario>& usuarios, const string& nombre);
 int iniciarSesion(Lista<Usuario>& usuarios);
-
+void mostrarMemoria(Lista<Usuario>& usuarios,
+                    Lista<int>& amigosA, Lista<int>& amigosB,
+                    Lista<SolicitudAmistad>& solicitudes,
+                    Lista<Mensaje>& mensajes,
+                    Lista<Album>& albumes, Lista<int>& duenos);
+void visitarPerfil(Lista<Usuario>& usuarios, Lista<int>& amigosA, Lista<int>& amigosB,
+                   Lista<Album>& albumes, Lista<int>& duenos, int id);
 // --- IMPLEMENTACIÓN DE LAS FUNCIONES ---
 
 inline string leer(string texto) {
@@ -616,6 +622,146 @@ inline void guardarFotos(Datos& datos, Lista<Album>& albumes, Lista<int>& duenos
         }
     }
     archivo.close();
+}
+
+inline void mostrarMemoria(Lista<Usuario>& usuarios,
+                           Lista<int>& amigosA, Lista<int>& amigosB,
+                           Lista<SolicitudAmistad>& solicitudes,
+                           Lista<Mensaje>& mensajes,
+                           Lista<Album>& albumes, Lista<int>& duenos) {
+    unsigned int reservada = 0;
+    unsigned int usada = 0;
+
+    reservada += usuarios.getCapacidad()    * sizeof(Usuario);
+    usada     += usuarios.getCantidad()     * sizeof(Usuario);
+
+    reservada += amigosA.getCapacidad()     * sizeof(int);
+    usada     += amigosA.getCantidad()      * sizeof(int);
+
+    reservada += amigosB.getCapacidad()     * sizeof(int);
+    usada     += amigosB.getCantidad()      * sizeof(int);
+
+    reservada += solicitudes.getCapacidad() * sizeof(SolicitudAmistad);
+    usada     += solicitudes.getCantidad()  * sizeof(SolicitudAmistad);
+
+    reservada += mensajes.getCapacidad()    * sizeof(Mensaje);
+    usada     += mensajes.getCantidad()     * sizeof(Mensaje);
+
+    reservada += albumes.getCapacidad()     * sizeof(Album);
+    usada     += albumes.getCantidad()      * sizeof(Album);
+
+    reservada += duenos.getCapacidad()      * sizeof(int);
+    usada     += duenos.getCantidad()       * sizeof(int);
+
+    for (int k = 0; k < albumes.getCantidad(); k++) {
+        reservada += albumes[k].getCapacidad() * sizeof(Foto);
+        usada     += albumes[k].getCantFotos() * sizeof(Foto);
+    }
+
+    cout << "[Memoria usada:     " << usada << " bytes]\n";
+    cout << "[Memoria reservada: " << reservada << " bytes]\n";
+
+}
+
+
+inline void visitarPerfil(Lista<Usuario>& usuarios, Lista<int>& amigosA, Lista<int>& amigosB,
+                          Lista<Album>& albumes, Lista<int>& duenos, int id) {
+    int idAmigo;
+    try {
+        idAmigo = std::stoi(leer("Id del amigo a visitar: "));
+    } catch (const std::exception& e) {
+        cout << "Id invalido" << endl;
+        return;
+    }
+
+    int pos = buscarUsuario(usuarios, idAmigo);
+    if (pos == -1) {
+        cout << "Ese usuario no existe" << endl;
+        return;
+    }
+    if (idAmigo == id || !sonAmigos(amigosA, amigosB, id, idAmigo)) {
+        cout << "Solo puedes visitar el perfil de tus amigos" << endl;
+        return;
+    }
+
+    // El contador empieza aqui, al entrar al perfil del amigo
+    unsigned long long iter = 0;
+    int opcion;
+
+    do {
+        iter++;   // cada vuelta del menu cuenta
+
+        cout << "\n===============================\n";
+        cout << "     PERFIL DE AMIGO\n";
+        cout << "===============================\n";
+        usuarios[pos].mostrarUsuario();   // id, nombre, nacimiento, correo, foto, ciudad, pais, inscripcion
+        cout << "Memoria del usuario: sizeof(Usuario) = " << sizeof(Usuario) << " bytes\n";
+        cout << "-------------------------------\n";
+        cout << "Iteraciones acumuladas: " << iter << endl;
+        cout << "1. Ver sus albumes\n0. Volver\n";
+
+        try {
+            opcion = std::stoi(leer("Opcion: "));
+        } catch (const std::exception& e) {
+            opcion = -1;
+        }
+
+        if (opcion == 1) {
+            unsigned long long iterAntes = iter;
+            Lista<int> visibles;
+            for (int k = 0; k < albumes.getCantidad(); k++) {
+                iter++;
+                if (duenos[k] == idAmigo) {
+                    string priv = albumes[k].getPrivacidad();
+                    if (priv == "publico" || priv == "amigos") visibles.agregar(k);
+                }
+            }
+
+            if (visibles.getCantidad() == 0) {
+                cout << "No hay albumes disponibles" << endl;
+                continue;
+            }
+
+            unsigned long long memAlbumes = 0;   // acumulado de los albumes listados
+            for (int i = 0; i < visibles.getCantidad(); i++) {
+                iter++;
+                Album& a = albumes[visibles[i]];
+                cout << endl << i + 1 << ". ";
+                a.mostrarAlbum();
+
+                unsigned long long memObjeto = sizeof(Album);
+                unsigned long long memFotosUsada = (unsigned long long)a.getCantFotos() * sizeof(Foto);
+                unsigned long long memFotosReservada = (unsigned long long)a.getCapacidad() * sizeof(Foto);
+
+                cout << "Memoria: sizeof(Album) = " << memObjeto << " bytes | "
+                     << "fotos usadas = " << memFotosUsada << " bytes | "
+                     << "fotos reservadas = " << memFotosReservada << " bytes\n";
+
+                memAlbumes += memObjeto + memFotosReservada;
+            }
+            cout << "\nMemoria total de los albumes listados: " << memAlbumes << " bytes\n";
+
+            cout << "Iteraciones usadas para entrar a los albumes: "
+                 << iter - iterAntes << endl;
+
+            int op;
+            try {
+                op = std::stoi(leer("Numero de album para abrir (0 para volver): "));
+            } catch (const std::exception& e) {
+                op = 0;
+            }
+
+            if (op >= 1 && op <= visibles.getCantidad()) {
+                albumes[visibles[op - 1]].carruselConteo(iter);
+                cin.ignore(1000, '\n');
+            }
+        } else if (opcion != 0) {
+            cout << "Opcion invalida" << endl;
+        }
+    } while (opcion != 0);
+
+    cout << "Total de iteraciones en este perfil: " << iter << endl;
+    cout << "Memoria base del perfil visitado: " << sizeof(Usuario) << " bytes" << endl;
 }
 
 #endif

@@ -127,3 +127,53 @@ void Album::carrusel() {
         }
     }
 }
+
+void Album::carruselConteo(unsigned long long& iter) {
+    int total = fotos.getCantidad();
+    if (total <= 0) {
+        cout << "El album esta vacio" << endl;
+        return;
+    }
+
+    // -1 = foto aun no vista
+    Lista<long long> iterPorFoto;
+    for (int i = 0; i < total; i++) {
+        iter++;
+        iterPorFoto.agregar(-1);
+    }
+
+    unsigned long long inicio = iter;   // iteraciones al abrir el carrusel
+    int actual = 0;
+    char opcion = ' ';
+
+    while (opcion != 's' && opcion != 'S') {
+        iter++;
+        cout << endl << "Foto " << actual + 1 << " de " << total << endl;
+        fotos[actual].mostrarFoto();
+
+        // Primera vez que se ve esta foto: guardamos cuantas iteraciones costo llegar
+        if (iterPorFoto[actual] == -1) {
+            iterPorFoto[actual] = iter - inicio;
+        }
+        cout << "Iteraciones para ver esta foto por primera vez: "
+             << iterPorFoto[actual] << endl;
+        cout << "Iteraciones totales desde que entraste al perfil: " << iter << endl;
+
+        cout << "[o] anterior  [p] siguiente  [l] like  [k] dislike  [s] salir: ";
+        if (!(cin >> opcion)) return;
+
+        if (opcion == 'p' || opcion == 'P') {
+            actual = (actual + 1) % total;
+        } else if (opcion == 'o' || opcion == 'O') {
+            actual = (actual - 1 + total) % total;
+        } else if (opcion == 'l' || opcion == 'L') {
+            fotos[actual].darLike();
+        } else if (opcion == 'k' || opcion == 'K') {
+            fotos[actual].quitarLike();
+            cout << "Like quitado" << endl;
+        } else if (opcion != 's' && opcion != 'S') {
+            cout << "Opcion invalida" << endl;
+        }
+    }
+
+}

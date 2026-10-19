@@ -39,13 +39,16 @@ int main() {
     cargarFotos(datos, albumes, duenos);
 
     int pos = iniciarSesion(usuarios);
-    if (pos == -1) return 0;
+    if (pos == -1){
+        mostrarMemoria(usuarios, amigosA, amigosB, solicitudes, mensajes, albumes, duenos);
+        return 0;
+    }
     int id = usuarios[pos].getId();
     cout << "Bienvenido " << usuarios[pos].getNombre() << endl;
 
     int opcion;
     do {
-        cout << "\n1. Ver mi perfil\n2. Ver mis amigos\n3. Ver solicitudes recibidas\n4. Enviar solicitud\n5. Ver mensajes\n6. Enviar mensaje\n7. Ver mis albumes\n8. Ver albumes de otro\n9. Usuario con mas amigos\n0. Salir\n";
+        cout << "\n1. Ver mi perfil\n2. Ver mis amigos\n3. Ver solicitudes recibidas\n4. Enviar solicitud\n5. Ver mensajes\n6. Enviar mensaje\n7. Ver mis albumes\n8. Ver albumes de otro\n9. Usuario con mas amigos \n10. Visitar perfil de amigo\n0. Salir\n";
         opcion = std::stoi(leer("Opcion: "));
 
         switch (opcion) {
@@ -63,9 +66,11 @@ int main() {
             break;
         }
         case 9: usuarioConMasAmigos(datos, usuarios); break;
+        case 10: visitarPerfil(usuarios, amigosA, amigosB, albumes, duenos, id); break;
         case 0:
             guardarDatos(datos, usuarios, amigosA, amigosB, solicitudes, mensajes);
             guardarFotos(datos, albumes, duenos);
+            mostrarMemoria(usuarios, amigosA, amigosB, solicitudes, mensajes, albumes, duenos);
             cout << "Datos guardados exitosamente. Hasta luego" << endl;
             break;
         default: cout << "Opcion invalida" << endl; break;
